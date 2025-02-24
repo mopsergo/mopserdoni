@@ -1,0 +1,38 @@
+[project]
+name = "mopserdoni"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "", email = "leber@posteo.de" }
+]
+dependencies = [
+    "mailbox>=0.4",
+    "flask>=3.1.0",
+    "flask_sqlalchemy>=3.1.1",
+    "flask_bootstrap>=3.3.7.1",
+    "flask_httpauth>=4.8.0",
+    "flask_wtf>=1.2.2",
+    "pandas>=2.2.3",
+    "numpy>=2.2.2",
+    "xlsxwriter>=3.2.2",
+    "datetime>=5.5",
+    "python-dotenv>=1.0.1",
+    "Flask-Migrate>=4.1.0",
+    "email_validator>=2.2.0",
+]
+readme = "README.md"
+requires-python = ">= 3.12"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = []
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mopserdoni"]

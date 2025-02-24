@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Gebot bearbeiten</h2>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+        {{ form.anteilname.label }} {{ form.anteilname(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.verteilort.label }} {{ form.verteilort(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.verteilort_wunsch.label }} {{ form.verteilort_wunsch(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.anteilgr.label }} {{ form.anteilgr(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.brot.label }} {{ form.brot(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.brot_kommentar.label }} {{ form.brot_kommentar(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.gebotgruen.label }} {{ form.gebotgruen(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.gebotgelb.label }} {{ form.gebotgelb(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.gebotrot.label }} {{ form.gebotrot(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.gebotackertage.label }} {{ form.gebotackertage(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.name_a.label }} {{ form.name_a(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.mail_a.label }} {{ form.mail_a(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.tel_a.label }} {{ form.tel_a(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.name_b.label }} {{ form.name_b(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.mail_b.label }} {{ form.mail_b(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.name_c.label }} {{ form.name_c(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.mail_c.label }} {{ form.mail_c(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.updated }} {{ form.updated(class="form-control") }}
+    </div>
+
+    <button type="submit" class="btn btn-warning">Speichern</button>
+    <a href="{{ url_for('admin.view_offers') }}" class="btn btn-warning">Abbrechen</a>
+</form>
+{% endblock %}

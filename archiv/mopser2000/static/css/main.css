@@ -1,0 +1,142 @@
+html {
+    font-size: 100%;
+    box-sizing: border-box;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+body {
+    margin: 1;
+    font-family: 'Verdana', sans-serif;
+    color: #333;
+    background: #d6cfd2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+h1 {
+    font-family: 'Arial Black', sans-serif;
+    font-size: 5rem;
+    margin: 0;
+    line-height: 1.5;
+    text-align: center;
+}
+
+h2 {
+    font-family: 'Arial Black', sans-serif;
+    font-size: 3rem;
+    margin: 0;
+    line-height: 1.5;
+    text-align: center;
+}
+
+h3 {
+    font-family: 'Arial Black', sans-serif;
+    font-size: 2rem;
+    margin: 1;
+    line-height: 1.5;
+    text-align: center;
+}
+
+
+div {
+    background: #bf2871;
+    color: #f7eff3;
+    border-radius: 100px;
+    padding: 0.75rem 1rem;
+    margin: auto;
+  
+}
+
+.center {
+    margin: auto;
+  }
+
+
+ul {
+    text-align: center
+}
+p {
+    font-size: 1rem;
+    line-height: 1.4;
+    text-align: center;
+}
+/* links */
+a {
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+strong {
+    font-weight: bold;
+    letter-spacing: 1.5px;
+
+  }
+
+
+a:hover {
+    color: #751dda;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.blinking{
+    animation:blinkingText 0.5s infinite;
+}
+
+@keyframes blinking2Text{
+    0%{     color: rgb(255, 255, 255);}
+    5%{    color: transparent; }
+    10%{     color: rgb(255, 255, 255);}
+    15%{    color: transparent; }
+
+    20%{     color: rgb(255, 255, 255);}
+    25%{    color: transparent; }
+
+    30%{     color: rgb(255, 255, 255);}
+    35%{    color: transparent; }
+
+    40%{     color: rgb(255, 255, 255);}
+    45%{    color: transparent; }
+
+    50%{     color: rgb(255, 255, 255);}
+
+    55%{     color: rgb(255, 255, 255);}
+    60%{    color: transparent; }
+}
+
+
+@keyframes blinkingText{
+    0%{     color: rgb(223, 219, 9);}
+ 
+    10%{     color: rgb(223, 219, 9);}
+    15%{    color: transparent; }
+
+    20%{     color: rgb(223, 219, 9);}
+
+
+    30%{     color: rgb(223, 219, 9);}
+    35%{    color: transparent; }
+
+    40%{     color: rgb(223, 219, 9);}
+    45%{    color: transparent; }
+
+    50%{     color: rgb(13, 223, 223);}
+
+    55%{     color: rgb(255, 255, 255);}
+    60%{    color: transparent; }
+}
+
+ 
+ .table {
+    margin: auto;
+    width: 50% !important; 
+ }
+
+
+
+/* media queries */
+@media screen and ( max-width: 750px ) {
+    body { background: #bf2871; }
+}

@@ -1,0 +1,63 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+{% endblock %}
+
+
+{% block title %}
+Analyse
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="container">
+
+
+      <h1 class="pt-5 pb-2">Mopser Analytics</h1>
+      <p class="ml-4"><a href="{{ url_for('index') }}">Zurück zur Startseite</a></p>
+
+
+      <h3 class="pt-5 pb-2">Ergebnisse der Bietrunde</h3>
+
+<!--
+      <p class="lead alert alert-primary">Ergebnisse der Bietrunde 2023</p>-->
+
+
+      <!--<p class="lead">Ergebnisse der Bietrunde 2023</p>-->
+
+     <!--<p class="lead alert alert-warning">.</p>-->
+
+
+	<!--	<table class="table">-->
+
+      {% for table in tables %}
+      <tr>
+            <!--<td>{{ table }}</td>-->
+            <td>{{ table|safe }}</td>
+
+      </tr>
+      {% endfor %}
+
+	<!--	</table>-->
+
+    <hr>
+
+    <h3 class="pt-5 pb-2">Manipulationen</h3>
+
+
+    <p class="ml-4"><a href="{{ url_for('html_list') }}">Abgegebene Gebote anzeigen</a></p>
+    <!--<p class="ml-4"><a href="{{ url_for('add_bedarf') }}">Bedarf hinzufügen</a></p>-->
+    <p class="ml-4"><a href="{{ url_for('select_bedarf') }}">Bedarf anpassen</a></p>
+    <p class="ml-4"><a href="{{ url_for('select_record') }}">Gebote bearbeiten</a></p>
+    <p class="ml-4"><a href="{{ url_for('delete_offers') }}">App zurücksetzen</a></p>   
+     <!--<p class="ml-4"><a href="{{ url_for('download') }}">Gebote herunterladen (alt)</a></p>-->
+    <p class="ml-4"><a href="{{ url_for('download_new') }}">Gebote herunterladen</a></p>
+
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1>MOPSER ANALYTICS</h1>
+
+
+<h3>Was brauchen wir als {{ project_need.name }} für die Saison {{ project_need.saison }}:</h3>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Anteile</th>
+            <th>Gemüse</th>
+            <th>Brot</th>
+            <th>Gemüse+Brot</th>
+            <th>Ackerei</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>Erforderter Durchschnittswert pro (1) Anteil / Monat</th>
+            <td></td>
+            <td>{{ project_need.avg_offer_veg }}</td>
+            <td>{{ project_need.avg_offer_bread }}</td>
+            <td>{{ project_need.avg_offer_veg + project_need.avg_offer_bread }}</td>
+            <td>{{ project_need.avg_working_days }}</td>
+        </tr>
+
+        <tr> 
+            <th>dynamische Budgets / Jahr</th>
+            <td>{{ sum_offers }}</td>
+            <td>{{ dynamic_veg_costs_year }}</td>
+            <td>{{ dynamic_bread_costs_year }}</td>
+            <td><b>{{ total_dynamic_costs_year }}</b></td>
+            <td>{{ total_dynamic_working_days_year }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<p>Die dynamischen Budgets berechnen sich aus der Summe der jeweils gebotenen Anteile mal dem jeweiligen Durchschnittswert. Don't mind!</p>
+<p>38,5 Gemüseanteile -> 38,5x100 = 3850 € / Monat oder x12 = 46200 € / Jahr</p>
+<p>42,5 Brotanteile -> 42,5x15 = 637,5€ / Monat oder x12 = 7650 € / Jahr </p>
+
+
+<h3>Was wurde geboten!</h3>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Anteile: Gemüse / Brot</th>
+            <th>Gebote: grün</th>
+            <th>Gebote: gelb</th>
+            <th>Gebote: rot</th>
+            <th>Ackerei</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>Erbotener Durchschnittswert pro (1) Anteil / Monat</th>
+            <td>{{ sum_offers }}</td>
+            <td>{{ avg_offer_green_normalized }}</td>
+            <td>{{ avg_offer_yellow_normalized }}</td>
+            <td>{{ avg_offer_red_normalized }}</td>
+            <td>{{ avg_working_days_normalized }}</td>            
+        </tr>
+        <tr>
+            <th>Summe / Jahr</th>
+            <td>{{ sum_offers }}</td>
+            <td>{{ total_offers_green_year }}</td>
+            <td>{{ total_offers_yellow_year }}</td>
+            <td>{{ total_offers_red_year }}</td>
+            <td>{{ total_working_days_year }}</td>            
+        </tr>
+        <tr>
+            <th>Differenz / Jahr</th>
+            <td></td>
+            <td>{{ diff_offers_green_year }}</td>
+            <td>{{ diff_offers_yellow_year }}</td>
+            <td>{{ diff_offers_red_year }}</td>
+            <td>{{ diff_working_days_year }}</td>            
+        </tr>
+    </tbody>
+</table>
+
+
+<div class="mt-4">
+<button onclick="window.location.reload();" class="btn btn-warning">Laden</button>
+<a href="{{ url_for('user.index') }}" class="btn btn-warning">Start</a>
+<a href="{{ url_for('admin.manage_project_need') }}" class="btn btn-warning">Bedarf</a>
+<a href="{{ url_for('admin.view_offers') }}" class="btn btn-warning">Gebote</a>
+<a href="{{ url_for('admin.download_offers') }}" class="btn btn-warning">Download</a>
+<form method="POST" action="{{ url_for('admin.reset_app') }}" class="d-inline" onsubmit="return confirmReset();">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button type="submit" class="btn btn-warning">Reset</button>
+</form>
+</div>
+
+<script>
+function confirmReset() {
+    return confirm("Sicher? Damit werden alle Gebote unwiderruflich gelöscht!");
+}
+</script>
+
+
+{% endblock %}

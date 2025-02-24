@@ -1,0 +1,106 @@
+{% extends 'bootstrap/base.html' %}
+
+
+{% block styles %}
+{{super()}}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+      
+{% endblock %}
+
+
+{% block title %}
+Mopser Biet App 2000
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+
+      <h1 class="pt-5 pb-2">Mopser Biet-App 2000</h1>
+
+      <p class="lead alert alert-primary">Willkommen bei der digitalen Bietrunde für die Solawi Donihof Saison 2022/23.</p>
+
+
+	  <!-- links -->
+
+	  <p class="lead">Hier kannst du <a class='blinking' href="{{ url_for('add_record') }}">dein Gebot abgeben.</a></p>
+   <p>Bitte pro Anteil nur einmal abstimmen!</p>
+    <hr>
+
+    <h3 class="pt-5 pb-2">Zur Orientierung gibt es folgende Infos:</h3>
+
+   <!--<p class="lead alert alert-primary">Zur Orientierung gibt es folgende Infos:</p>-->
+
+
+
+    <table class="table text-center">
+       
+       <tbody>
+        <tr>
+          <td>Geplante Anteile</td>
+          <td><strong>{{df_o[0]}}</strong></td>
+      </tr>
+           <tr>
+               <td>Jahresbudget</td>
+               <td><strong>{{df_o[1]}} €</strong></td>
+           </tr>
+           <tr>
+               <td>Monatlicher Richtwert pro Anteil</td>
+               <td><strong>{{df_o[2]}} €</strong></td>
+           </tr>
+       <tr>
+           <td>Benötigte Ackertage für die Saison</td>
+           <td><strong>{{df_o[3]}}</strong></td>
+       </tr>
+       <tr>
+        <td>Richtwert Ackertage pro Anteil & Jahr</td>
+        <td><strong>{{df_o[4]}}</strong></td>
+    </tr>
+       </tbody>
+    </table>
+
+
+  <p><a style = "color:#bf2871;" href="{{ url_for('analyse') }}">Mopser Analytics</a></p>
+
+
+<!--
+<p class="lead">Wir planen die Saison mit <strong>{{df_o[0]}} Anteilen.</strong></p>
+
+
+   <div class="text-center">
+   <div class="col-sm-6">
+   <p class="lead">Jahresbudget: <strong>{{df_o[2]}} €</strong></p>
+   <p class="lead">Monatlicher Richtwert pro Anteil: <strong>{{df_o[4]}} €</strong></p>
+  </div>
+
+  <div class="col-sm-6">
+    <p class="lead">Benötigte Ackertage: <strong>{{df_o[5]}}</strong></p>
+    <p class="lead">Richtwert pro Anteil: <strong>{{df_o[6]}} Ackertage</strong></p>
+    </div>
+</div>
+-->
+<!--
+
+    <p>Insgesamt benötigen wir ein <strong>Jahresbudget von {{df_o[2]}} €.</strong></p>
+    <p>Das entspricht monatlich {{df_o[3]}} €.</p>
+    <p>Pro (ganzer) Anteil ergibt sich daraus ein <strong>Richtwert von {{df_o[4]}} € pro Monat!</strong></p>
+    <p>Insgesamt benötigen wir <strong>{{df_o[5]}} Ackertage.</strong></p>
+    <p>Das entspricht durchschnittlich <strong>{{df_o[6]}} Ackertage pro Anteil.</strong></p>
+  -->
+<!--
+    <ul class="lead">
+      <li>Wir planen die Saison mit <strong>{{df_o[0]}}</strong> Anteilen.</li>
+      <li>Insgesamt benötigen wir ein Jahresbudget von <strong>{{df_o[2]}} €</strong>.</li>
+      <li>Das entspricht monatlich <strong>{{df_o[3]}} €</strong>.</li>
+      <li>Pro (ganzer) Anteil ergibt sich daraus ein <strong>Richtwert von {{df_o[4]}} € pro Monat!</strong> </li>
+      <li>Insgesamt benötigen wir <strong>{{df_o[5]}}</strong> Ackertage.</li>
+      <li>Das entspricht durchschnittlich <strong>{{df_o[6]}}</strong> Ackertage pro Anteil.</li>
+    </ul>
+  -->
+  
+</div>
+
+{% endblock %}

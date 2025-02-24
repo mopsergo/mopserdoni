@@ -1,0 +1,100 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+{% endblock %}
+
+
+{% block title %}
+Select Bedarf
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+  <div class="row pb-5">
+   <!-- <div class="col-lg-10 mx-lg-auto">-->
+
+	<h2 class="pt-5 pb-2">Bedarf anpassen</h2>
+
+
+
+	<p class="ml-4"><a href="{{ url_for('analyse') }}">Zurück zu Mopser Analytics</a></p>
+
+
+	<p class="lead alert alert-primary">Hier kannst du den Bedarf für die aktuelle Saison anpassen.</p>
+	<p>Beachte: Nur der Bedarf in der ersten Zeile ist für die Berechnungen relevant.</p>
+
+
+	  <!-- start form - not using WTForms here -->
+	  <form method="POST" id="form2" action="{{ url_for('edit_or_delete_bedarf') }}">
+
+		<table class="table">
+			<tr>
+				<th></th>
+				<th>Solawiname</th>
+				<th>Saison</th>
+				<th>Anteile</th>
+				<th>Jahresbudget</th>
+				<th>Ackertage</th>
+				<th>Eingetragen</th>
+			</tr>
+
+			<!-- here is a for-loop to give us all the socks -->
+			{% for bedarf in bedarfe %}
+			<tr>
+				<td class="center-align"><input type="radio" name="id" value="{{ bedarf.id }}" required></td>
+				<td>{{ bedarf.solawiname }}</td>
+				<td>{{ bedarf.saison }}</td>
+				<td>{{ bedarf.anteile }}</td>
+				<td>{{ bedarf.budget }}</td>
+				<td>{{ bedarf.ackertage }}</td>
+				<td>{{ bedarf.updated }}</td>
+				
+			</tr>
+			{% endfor %}
+		</table>
+
+<hr>
+		<!--<p class="lead alert alert-primary">What do you want to do with the selected record?</p>-->
+		<p class="lead alert alert-primary">Was willst du machen?</p>
+
+
+			<div class="form-check form-check-inline text-center">
+			<label class="form-check-label"><input class="form-check-input" type="radio" name="choice" value="edit" required>Anpassen</label>
+			</div>
+			<div class="form-check form-check-inline text-center">
+			<label class="form-check-label"><input class="form-check-input" type="radio" name="choice" value="delete" required>Löschen</label>
+			</div>
+			
+		
+
+
+<!--
+		<div class="form-group lead alert alert-success pb-4">
+          <p>What do you want to do with the selected record?</p>
+
+          <div class="form-check form-check-inline">
+          <label class="form-check-label"><input class="form-check-input" type="radio" name="choice" value="delete" required> Delete it</label>
+          </div>
+          <div class="form-check form-check-inline">
+          <label class="form-check-label"><input class="form-check-input" type="radio" name="choice" value="edit" required> Edit it</label>
+          </div>
+        </div>
+		-->
+	
+		<!-- end form-group -->
+
+		<div class="form-group text-center">
+	        <input class="btn btn-info" type="submit" value="Und los">
+			
+        </div>
+
+		</form>
+		</div>
+	<!--</div>-->
+</div>
+
+{% endblock %}

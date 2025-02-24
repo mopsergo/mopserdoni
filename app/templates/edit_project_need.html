@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Manage Project Need</h2>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+        {{ form.name.label }} {{ form.name(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.saison.label }} {{ form.saison(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.avg_offer_veg.label }} {{ form.avg_offer_veg(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.avg_offer_bread.label }} {{ form.avg_offer_bread(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.avg_working_days.label }} {{ form.avg_working_days(class="form-control") }}
+    </div>
+
+    <button type="submit" class="btn btn-warning">Speichern</button>
+    <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-warning">Abbrechen</a>
+</form>
+{% endblock %}

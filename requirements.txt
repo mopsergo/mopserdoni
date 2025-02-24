@@ -1,0 +1,13 @@
+mailbox
+flask
+flask_sqlalchemy
+flask_bootstrap
+flask_httpauth
+flask_wtf
+pandas
+numpy
+xlsxwriter
+datetime
+python-dotenv
+flask-migrate
+email-validator

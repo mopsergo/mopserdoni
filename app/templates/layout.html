@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&display=swap" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+
+   
+    <style>
+        body {
+            background: linear-gradient(135deg, #7DF9FF, #FF69B4); /* Vibrant gradient background */
+            font-family: 'Roboto Mono', monospace; /* Use Roboto Mono for a modern look */
+                   }
+
+        /* Apply the font to your CSS */
+        h1, h3, h4, a, .btn {
+            /*font-family: 'Audiowide', sans-serif;  Use Audiowide for a cyberpunk aesthetic with readability */
+            font-family: 'Orbitron', sans-serif; /* Use Orbitron font for a cyberpunk aesthetic */
+            /*font-family: 'Roboto Mono', monospace; /* Use Roboto Mono for a modern look */
+        }
+
+
+        table, th, td {
+    color: white; /* Set text color to white for tables */
+}
+
+.btn {
+            border-radius: 30px;
+            background-color: #00FF00; /* Neon Green */
+            color: #fff;
+            border: none;
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Button shadow */
+        }
+
+        .btn:hover {
+            background-color: rgba(255, 20, 147, 0.9); /* Neon Magenta */
+            transform: scale(1.1);
+        }
+
+        h1, h3, h2, h4 {
+            color: #fff;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            font-weight: 700; /* Set h1 to bold */
+
+        }
+
+        a {
+            text-decoration: none;
+            color: #fff;
+        }
+
+        h1 {
+    font-size: 4.5em; /* Increase heading size */
+}
+
+h2 {
+    font-size: 2.5em; /* Increase heading size */
+}
+
+
+h3, h4 {
+    font-size: 1.75em; /* Increase subheading size */
+}
+
+p, a {
+    font-size: 1.2em; /* Increase paragraph and link size */
+}
+        .content-container {
+    background-color: rgba(255, 20, 147, 0.9); /* Vibrant pink with transparency */
+    color: white;
+    width: 100%;
+    padding: 1.5rem; /* Inner padding */
+    border-radius: 20px; /* Rounded corners */
+    margin-top: 2rem; /* Top margin */
+    margin-bottom: 2rem; /* Bottom margin */
+    display: flex;
+    flex-direction: column; /* Align children in a column */
+    text-align: center; /* Center text */
+}
+.content-container:hover {
+            transform: scale(1.02); /* Slight zoom effect on hover */
+        }
+.footer-container {
+    width: 100%; /* Make sure the footer spans the full width */
+    margin-top: 2rem; /* Top margin */
+
+    padding: 1rem; /* Apply padding directly to footer */
+    background-color: rgba(255, 20, 147, 0.9); /* Vibrant pink with transparency */
+    color: white;
+    position: relative; /* Establish containing block for absolute positioning */
+    overflow: hidden; /* Ensure content does not overflow */
+    border-radius: 0 0 15px 15px; /* Only bottom rounded corners */
+}
+
+
+
+        @media (min-width: 992px) { /* lg and up */
+            .content-container {
+                width: 80%;
+                margin-left: auto; /* Center horizontally */
+                margin-right: auto; /* Center horizontally */
+            }
+        }
+
+  
+
+        /* Pug Dog Animation */
+        .pug-dog {
+            position: absolute;
+            bottom: 0;
+            left: -10%;
+            height: 50px; /* Slightly larger pug for emphasis */
+            z-index: 0;
+            animation: walk 10s linear infinite;
+        }
+
+        @keyframes walk {
+            0% {
+                transform: translateX(0vw);
+            }
+            100% {
+                transform: translateX(80vw);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .footer-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+
+
+    </style>
+
+    <title>🐕 Mopser Biet-App 3000 🐕</title>
+</head>
+<body>
+    <div class="container mt-4 content-container mx-auto">
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Schließen">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- Main Content Block -->
+        <div class="d-flex justify-content-center align-items-center flex-column">
+            {% block content %}{% endblock %}
+        </div>
+
+        <!-- Footer with Animated Pug Dog -->
+        <footer>
+            <div class="footer-container d-flex justify-content-center align-items-center">
+                <div class="footer-text">
+                    <p>© 2025 Mopser Industries</p>
+                </div>
+                <img src="{{ url_for('static', filename='img/pug_dog.gif') }}" alt="Pug Dog" class="pug-dog">
+            </div>
+        </footer>
+    </div>
+
+
+    <!-- Load sorttable.js from your local static files -->
+    <script src="{{ url_for('static', filename='js/sorttable.js') }}"></script>
+
+    <!-- Include jQuery (required for Bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+    <!-- Include Popper.js (required for Bootstrap tooltips and popovers) -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
+    <!-- Include Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    
+</body>
+</html>

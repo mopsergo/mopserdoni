@@ -1,0 +1,1021 @@
+
+Generate the python code for a leightweight form-based Flaks app.
+THe apps should enable people to place over and analyse offers and needs.
+Useres (no authentification) shoud fill in a predefined form.
+Admins should be able to administrate the basic information concerning the needs and get acces to some analytics concercing the offers made.
+Admin cann acces the admin space with: flask_httpauth
+Use SQLAlchemy to access the database.
+Use flask-migrate to set up database.
+Use flask_wtf to directly define the forms inside the flas user routes.
+Once the user handed it in an offer try to send her an email using email.mime.text. (try /except)
+
+
+Use Bootstrap to nicely style the app. 
+The background should be pink! 
+The app should be responsible and usable from a mobile device as well from desktop.
+
+here ist the structure:
+
+├── app/
+│   ├── __init__.py
+│   ├── models.py
+│   ├── forms.py
+│   ├── user.py
+│   ├── admin.py
+│   ├── templates/
+├── run.py
+├── .env
+
+
+Here is the information about the needs the admin wants to specify
+1. Name of the Projekt like DOnihof
+2. Saison of the Projekt like 2021/22
+3. average suggested offer for vegtable / month
+4. average suggested offer for bread / month
+5. average suggested offer for working days / year
+
+The admin should be able
+0. Overview
+1. to show offers of users.
+2. delete offers of users
+3. edit the needs
+4. download an xlsx containing all information handed in by the users
+5. reset the app deleting all offers and optional also the information about the neeeds
+
+The admin start page should contain a overview (table) of all offers.
+1. How many overs we have (Adding "anteilgr" size of the offer)
+2. the calculated average offer nomrmalised to anteilgr size 1 for each gebotgruen, gebotgelb,gebotrot
+3. the total sum of the offers
+4. the total sum of the offers per year = *12
+5. calculated average offer for working days normalised to anteilgr size 1
+6. total sum of working days offered per yeay
+
+
+
+Here is the user form, frontend should be GERMAN.
+
+Basic Info 
+1. anteilname -> textfield
+2. verteilort -> dropdown
+3. anteilgr = Size of the offer -> drobdown (1, 0.5, 2)
+THe Offers
+4. gebotgruen -> int 
+5. gebotgelb -> int
+6. gebotrot -> int
+7. gebotackertage -> int
+Bread:
+8. brot -> dropdown (1, 0.5)
+9. brot_anzahlr -> numner (0.5 - 10)
+10. brot_kommentar -> textfield optional
+User Information 
+11. name_a -> textfield
+12. mail_a -> textfield
+13. tel_a -> textfield
+Optional Information about other members
+14. name_b -> textfield
+15. mail_b -> textfield
+16. name_c -> textfield
+17 mail_c -> textfield
+
+Add the packge where the user enteres the form, display some information about the needs:
+1. average suggested offer for vegtable
+2. average suggested offer for Bread
+3. average suggested amount of working day (gebotackertage)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### app.py
+
+import mailbox
+from os import environ
+import os
+from unicodedata import name
+from flask import Flask, render_template, request, flash, Response, send_file
+from flask_sqlalchemy import SQLAlchemy
+from flask_bootstrap import Bootstrap
+#from flask_basicauth import BasicAuth
+
+from flask_httpauth import HTTPBasicAuth
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from io import BytesIO
+
+from flask_wtf import FlaskForm
+from wtforms import SubmitField, SelectField, RadioField, HiddenField, StringField, IntegerField, FloatField
+from wtforms.validators import InputRequired, Length, Regexp, NumberRange
+from datetime import date
+import pandas as pd
+import numpy as np
+import xlsxwriter
+
+from sqlalchemy import create_engine
+
+###################
+from flask import flash
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.header import Header
+##################
+
+
+from models import db, Offer, Needs
+
+from forms import AddRecord_Offer, AddRecord_Needs, DeleteForm_Offer, DeleteForm_Needs
+
+app = Flask(__name__)
+auth = HTTPBasicAuth()
+
+#app.app_context()
+
+
+##### Add Admin Users & Password for Mopser Analytics #####
+
+users = {
+    "fabi": generate_password_hash("control"),
+    "admin": generate_password_hash("lookup")
+}
+
+### +++ EMAIL Config
+
+gmail_user = 'leberheinz'
+gmail_password = 'dzvnqggtcsinjpnn'
+
+
+# Flask-WTF requires an enryption key - the string can be anything
+app.config['SECRET_KEY'] = 'MLXH243GssUWwKdTWS7FDhdwYF56wPj8'
+
+# Flask-Bootstrap requires this line
+Bootstrap(app)
+
+
+# +++++++++++++++++++++++++++ DB SQLITE CONFIG ++++++++++++++++++++++++++++++++
+basedir = os.path.abspath(os.path.dirname(__file__))
+db_name = 'sqlite:///' + os.path.join(basedir, 'bietapp.db')
+
+#db_name = 'sqlite:///bietapp.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = db_name
+        
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+engine = create_engine(db_name)
+db.init_app(app)
+#db = SQLAlchemy(app)
+
+
+
+# +++++++++++++++++++++ POSgreSQL CONFI ++++++++++++++++++++++++++++
+
+## heroku build
+#engine = create_engine(environ.get('DATABASE_URL').replace("://", "ql://", 1))
+
+### last version
+## render.com
+#engine = create_engine(environ.get('DATABASE_MOPSERTURN_DB_URL').replace("://", "ql://", 1))
+##### heroku
+#engine = create_engine(environ.get('DATABASE_URL'))
+## sqlite
+#engine = create_engine(db_name)
+
+
+
+# +++++++++++++++++++++++++++++++++++ DB MODELS ++++++++++++++++++++++++++++++++++++++
+
+## models.py
+
+
+
+# ++++++++++++++++++++++++++++++++++++++++++ FORMS ++++++++++++++++++++++++++++++++++
+
+## forms.py
+
+
+
+# +++++++++++++++++++++++
+# get local date - does not account for time zone
+# note: date was imported at top of script
+def stringdate():
+    today = date.today()
+    date_list = str(today).split('-')
+    # build string in format 01-01-2000
+    date_string = date_list[1] + "-" + date_list[2] + "-" + date_list[0]
+    return date_string
+
+@auth.verify_password
+def verify_password(username, password):
+    if username in users and \
+            check_password_hash(users.get(username), password):
+        return username
+
+
+# +++++++++++++++++++++++
+# routes
+
+@app.route('/')
+def index():
+
+    #df_needs = pd.read_sql_query("SELECT * FROM Needs;", raw_engine)
+
+    df_needs = pd.read_sql_table(
+	"Needs",  # table name
+	con=engine
+
+)
+
+    # df_o = [df_needs['anteile'][0],
+     # #      df_needs['budget'][0],
+      #      (df_needs['budget'][0]/12)/df_needs['anteile'][0],
+         #   df_needs['ackertage'][0],
+        #    df_needs['ackertage'][0]/df_needs['anteile'][0]]
+
+
+
+    df_o = [df_needs['solawiname'][0],
+            df_needs['saison'][0],
+            int(df_needs['anteile'][0]),
+            int(df_needs['budget'][0]),
+            int((df_needs['budget'][0]/12)/df_needs['anteile'][0]),
+            df_needs['ackertage'][0],
+            int(df_needs['ackertage'][0]/df_needs['anteile'][0])]
+
+
+    #df_o = list(np.array(df_o).astype(int))
+
+
+    return render_template('index.html', len= len(df_o), df_o=df_o)
+
+
+# ++++++++++++++++++++++++++ ADD OFFER ++++++++++++++++++++++++++++
+
+@app.route('/add_record', methods=['GET', 'POST'])
+def add_record():
+    form1 = AddRecord_Offer()
+    if form1.validate_on_submit():
+        anteilname = request.form['anteilname']
+        verteilort = request.form['verteilort']
+        anteilgr = request.form['anteilgr']
+        gebotgruen = request.form['gebotgruen']
+        gebotgelb = request.form['gebotgelb']
+        gebotrot = request.form['gebotrot']
+        gebotackertage = request.form['gebotackertage']
+        brot = request.form['brot']
+        brot_anzahl = request.form['brot_anzahl']
+        brot_kommentar = request.form['brot_kommentar']
+        name_a = request.form['name_a']
+        mail_a = request.form['mail_a']
+        tel_a = request.form['tel_a']
+        name_b = request.form['name_b']
+        mail_b = request.form['mail_b']
+        name_c = request.form['name_c']
+        mail_c = request.form['mail_c']
+
+
+        # get today's date from function, above all the routes
+        updated = stringdate()
+        # the data to be inserted into record model
+        record = Offer(anteilname, verteilort, anteilgr, gebotgruen, gebotgelb, gebotrot, gebotackertage, brot, brot_anzahl, brot_kommentar, name_a, mail_a, tel_a, name_b, mail_b, name_c, mail_c, updated)
+        # Flask-SQLAlchemy magic adds record to database
+        db.session.add(record)
+        db.session.commit()
+        # create a message to send to the template
+        message = f"Dein Gebote für den Anteil {anteilname} wurden übermittelt. Notiere dir bitte, was du geboten hast. -> grün: {gebotgruen}€, gelb: {gebotgelb}€, rot: {gebotrot}€, Ackertage: {gebotackertage}."
+        #message2 = f"grün: {gebotgruen}€, gelb: {gebotgelb}€, rot: {gebotrot}€, Ackertage: {gebotackertage}."
+
+
+# ++++++++++++++++++++ Write an EMAIL +++++++++++++++++++++++++++
+ #            
+        #message2 = f"grün: {gebotgruen}€, gelb: {gebotgelb}€, rot: {gebotrot}€, Ackertage: {gebotackertage}."
+        sent_from = gmail_user
+        to =  mail_a 
+            #email_text = message.encode('utf-8')
+        subject = 'Dein Gebot@MopserbietApp2000'
+        email_message = f'Hallo {name_a},\n\ndeine Gebote für den Anteil {anteilname} sind eingetrudelt.\nDas hast du geboten: \ngrün: {gebotgruen}€, \ngelb: {gebotgelb}€, \nrot: {gebotrot}€, \nAckertage: {gebotackertage}\n\nSolidarische Grüße,\nMops'
+        email_text = MIMEText(email_message.encode('utf-8'), 'plain', 'utf-8')
+
+
+       # email_message = 'Hallo {name_a}, dein Gebote für den Anteil {anteilname} sind eingetrudelt. Das hast du geboten: grün: {gebotgruen}€, gelb: {gebotgelb}€, rot: {gebotrot}€, Ackertage: {gebotackertage}. Solidarische Grüße, Mops'
+        #email_text = MIMEText(email_message.encode('utf-8'), 'plain', 'utf-8')
+        email_text['Subject'] = Header(subject, 'utf-8')
+        email_text['From'] = sent_from
+        email_text['To'] = to
+
+        try:
+            smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+            smtp_server.ehlo()
+            smtp_server.login(gmail_user, gmail_password)
+            #smtp_server.sendmail(sent_from, to, email_text)
+            smtp_server.sendmail(sent_from, to, email_text.as_string())
+            smtp_server.close()
+            print ("Email sent successfully!")
+        except Exception as ex:
+            print ("Something went wrong….",ex)
+
+# +++++++++++++++++++++++++ END EMAIL BLOCK
+
+
+
+
+        return render_template('add_record.html', message=message)
+    else:
+        # show validaton errors
+        for field, errors in form1.errors.items():
+            for error in errors:
+                flash("Error in {}: {}".format(
+                    getattr(form1, field).label.text,
+                    error
+                ), 'error')
+        return render_template('add_record.html', form1=form1)
+
+
+
+#############################################################
+
+
+
+# select a record to edit or delete
+@app.route('/select_record')
+@auth.login_required
+def select_record():
+    offers = Offer.query.order_by(Offer.anteilname).all()
+    return render_template('select_record.html', offers=offers)
+
+
+# edit or delete - come here from form in /select_record
+@app.route('/edit_or_delete', methods=['POST'])
+@auth.login_required
+
+def edit_or_delete():
+    id = request.form['id']
+    choice = request.form['choice']
+    offer = Offer.query.filter(Offer.id == id).first()
+    # two forms in this template
+    #form1 = AddRecord_Offer_Round_start()
+    form1= AddRecord_Offer()
+    form2 = DeleteForm_Offer()
+    return render_template('edit_or_delete.html', offer=offer, form1=form1, form2=form2, choice=choice)
+
+# result of delete - this function deletes the record
+@app.route('/delete_result', methods=['POST'])
+@auth.login_required
+def delete_result():
+    id = request.form['id_field']
+    purpose = request.form['purpose']
+    offer = Offer.query.filter(Offer.id == id).first()
+
+    if purpose == 'delete':
+        db.session.delete(offer)
+        db.session.commit()
+        message = f"Das Gebot von {offer.anteilname} wurde gelöscht."
+        return render_template('result.html', message=message)
+    else:
+        # this calls an error handler
+        abort(405)
+
+
+# result of edit - this function updates the record
+@app.route('/edit_result', methods=['POST'])
+@auth.login_required
+
+def edit_result():
+    id = request.form['id_field']
+    # call up the record from the database
+    gebot = Offer.query.filter(Offer.id == id).first()
+
+    # update all values
+    gebot.anteilname = request.form['anteilname']
+    gebot.verteilort = request.form['verteilort']
+    gebot.anteilgr = request.form['anteilgr']
+    gebot.gebotgruen = request.form['gebotgruen']
+    gebot.gebotgelb = request.form['gebotgelb']
+    gebot.gebotrot = request.form['gebotrot']
+    gebot.gebotackertage = request.form['gebotackertage']
+    gebot.brot = request.form['brot']
+    gebot.brot_anzahl = request.form['brot_anzahl']
+    gebot.brot_kommentar = request.form['brot_kommentar']
+    gebot.name_a = request.form['name_a']
+    gebot.mail_a = request.form['mail_a']
+    gebot.tel_a = request.form['tel_a']
+    gebot.name_b = request.form['name_b']
+    gebot.mail_b = request.form['mail_b']
+    gebot.name_c = request.form['name_c']
+    gebot.mail_c = request.form['mail_c']
+
+    # get today's date from function, above all the routes
+    gebot.updated = stringdate()
+
+    form1 = AddRecord_Offer()
+    if form1.validate_on_submit():
+        # update database record
+        db.session.commit()
+        # create a message to send to the template
+        message = f"Das Gebot von {gebot.anteilname} wurde geändert."
+        return render_template('result.html', message=message)
+    else:
+        # show validaton errors
+        gebot.id = id
+        for field, errors in form1.errors.items():
+            for error in errors:
+                flash("Error in {}: {}".format(
+                    getattr(form1, field).label.text,
+                    error
+                ), 'error')
+        return render_template('edit_or_delete.html', form1=form1, gebot=gebot, choice='edit')
+
+
+# ####### Delte all offers
+@app.route('/delete_offers')
+@auth.login_required
+def delete_offers():
+    return render_template('delete_offers.html')
+
+
+# ####### really delete all offers
+@app.route('/delete_all_offers')
+@auth.login_required
+def delete_all_offers():
+    db.session.query(Offer).delete()
+    db.session.commit()
+    message = f"Alle Gebote wurden gelöscht."
+    return render_template('result.html', message=message)
+  
+
+
+# ####### really delete all offers and bedarf
+@app.route('/delete_all_offers_bedarf')
+@auth.login_required
+def delete_all_offers_bedarf():
+    db.session.query(Offer).delete()
+    db.session.query(Needs).delete()
+    db.session.commit()
+    message = f"Alles wurde gelöscht."
+    return render_template('result.html', message=message)
+
+
+
+# ++++++++++++++++++++++++++++++++++ MOPSER ANALYTICS ++++++++++++++++++++++++++++++++++++
+
+# analyse app
+@app.route('/html_list')
+@auth.login_required
+def html_list():
+    offers = Offer.query.order_by(Offer.updated).all()
+    return render_template('html_list.html', offers=offers)
+
+
+
+@app.route('/analyse', methods=("POST", "GET"))
+@auth.login_required
+def analyse():
+
+    df_gebote = pd.read_sql_table(
+	"Offers",  # table name
+	con=engine
+    )
+
+
+    df_needs = pd.read_sql_table(
+	"Needs",  # table name
+	con=engine
+    )
+
+
+    #gebote = Offer.query.all()
+    #df_gebote = pd.DataFrame([t.__dict__ for t in gebote ])
+    #df_gebote=df_gebote.drop(['_sa_instance_state'], axis=1)
+
+    #bedarfe = Needs.query.all()
+    #df_needs = pd.DataFrame([t.__dict__ for t in bedarfe ])
+    #df_needs=df_needs.drop(['_sa_instance_state'], axis=1)
+
+
+    df_analyse=pd.DataFrame({
+        'Anteile':[df_needs['anteile'][0], df_gebote['anteilgr'].sum(), -(df_needs['anteile'][0]-df_gebote['anteilgr'].sum()),'-'],
+        'gruen': [df_needs['budget'][0], df_gebote['gebotgruen'].sum()*12, -(df_needs['budget'][0]-df_gebote['gebotgruen'].sum()*12),-(df_needs['budget'][0]-df_gebote['gebotgruen'].sum()*12)/12],
+        'gelb':[df_needs['budget'][0], df_gebote['gebotgelb'].sum()*12, -(df_needs['budget'][0]-df_gebote['gebotgelb'].sum()*12),  -(df_needs['budget'][0]-df_gebote['gebotgelb'].sum()*12)/12],
+        'rot':[df_needs['budget'][0], df_gebote['gebotrot'].sum()*12, -(df_needs['budget'][0]-df_gebote['gebotrot'].sum()*12), -(df_needs['budget'][0]-df_gebote['gebotrot'].sum()*12)/12],
+        'Ackertage':[df_needs['ackertage'][0], df_gebote['gebotackertage'].sum(),-(df_needs['ackertage'][0]-df_gebote['gebotackertage'].sum()),'0']
+            }, index = ['Bedarf (Jahr)', 'Σ Gebote (Jahr)', 'Δ Jahr', 'Δ Monat'])
+
+    df_analyse[['gruen','gelb','rot','Ackertage']]=df_analyse[['gruen','gelb','rot','Ackertage']].astype(int)
+    df_analyse=df_analyse.replace({0:'-'})
+
+    return render_template('analyse.html',  tables=[df_analyse.to_html(classes='table').replace('border="1" ', '').replace('class="dataframe table"','class="table"').replace('tr style="text-align: right;"','tr')], titles=df_analyse.columns.values)
+    #return render_template('analyse.html',  tables=[df_analyse.to_html(classes='data')], titles=df_analyse.columns.values)
+
+
+# ++++++++++++++++++++ DOWNLOAD OLD +++++++++++++++++++++++++++++++++++++++
+
+
+@app.route("/download", methods=["GET"])
+@auth.login_required
+def download():
+    
+    df_gebote = pd.read_sql_table(
+	"Offers",  # table name
+	con=engine
+    )
+
+    #gebote = Offer.query.all()
+    #df_gebote = pd.DataFrame([t.__dict__ for t in gebote ])
+    #df_gebote=df_gebote.drop(['_sa_instance_state'], axis=1)
+
+    df_gebote = df_gebote[[ 'id',
+                            'anteilname',
+                            'verteilort',
+                            'anteilgr',
+                            'gebotgruen',
+                            'gebotgelb',
+                            'gebotrot',
+                            'gebotackertage',
+                            'brot',
+                            'brot_anzahl',
+                            'brot_kommentar',
+                            'name_a',
+                            'mail_a',
+                            'tel_a',
+                            'name_b',
+                            'mail_b',
+                            'name_c',
+                            'mail_c',
+                            'updated']]
+
+
+    output = BytesIO()
+
+    with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
+        df_gebote.to_excel(writer, sheet_name="Sheet1")
+
+    output.seek(0)
+
+    return send_file(output, attachment_filename="bietrunde.xlsx", as_attachment=True)
+
+
+# ++++++++++++++++++++ DOWNLOAD NEW +++++++++++++++++++++++++++++++++++++++
+
+from flask import make_response
+
+@app.route("/download_new", methods=["GET"])
+@auth.login_required
+def download_new():
+    
+    df_gebote = pd.read_sql_table(
+	"Offers",  # table name
+	con=engine
+    )
+
+    #gebote = Offer.query.all()
+    #df_gebote = pd.DataFrame([t.__dict__ for t in gebote ])
+    #df_gebote=df_gebote.drop(['_sa_instance_state'], axis=1)
+
+    df_gebote = df_gebote[[ 'id',
+                            'anteilname',
+                            'verteilort',
+                            'anteilgr',
+                            'gebotgruen',
+                            'gebotgelb',
+                            'gebotrot',
+                            'gebotackertage',
+                            'brot',
+                            'brot_anzahl',
+                            'brot_kommentar',
+                            'name_a',
+                            'mail_a',
+                            'tel_a',
+                            'name_b',
+                            'mail_b',
+                            'name_c',
+                            'mail_c',
+                            'updated']]
+
+
+    output = BytesIO()
+
+    with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
+        df_gebote.to_excel(writer, sheet_name="Sheet1")
+
+    output.seek(0)
+
+    response = make_response(output.read())
+    response.headers["Content-Disposition"] = "attachment; filename=bietrunde_donihof.xlsx"
+
+    return response
+
+
+
+
+
+#++++++++++++++++++++++ BEDARF +++++++++++++++++++++++++++++++++++#######
+
+# add the need for the season 
+
+@app.route('/add_bedarf', methods=['GET', 'POST'])
+@auth.login_required
+
+def add_bedarf():
+    form3 = AddRecord_Needs()
+    if form3.validate_on_submit():
+        solawiname = request.form['solawiname']
+        saison = request.form['saison']
+        anteile = request.form['anteile']
+        budget = request.form['budget']
+        ackertage = request.form['ackertage']
+    
+        # get today's date from function, above all the routes
+        updated = stringdate()
+        # the data to be inserted into Record model
+        record = Needs(solawiname, saison, anteile, budget, ackertage, updated)
+        # Flask-SQLAlchemy magic adds record to database
+        db.session.add(record)
+        db.session.commit()
+        # create a message to send to the template
+        message = f"Der Bedarf wurde eingestellt"
+        return render_template('add_bedarf.html', message=message)
+    else:
+        # show validaton errors
+        for field, errors in form3.errors.items():
+            for error in errors:
+                flash("Error in {}: {}".format(
+                    getattr(form3, field).label.text,
+                    error
+                ), 'error')
+        return render_template('add_bedarf.html', form3=form3)
+       
+# select a record to edit or delete
+@app.route('/select_bedarf')
+@auth.login_required
+
+def select_bedarf():
+    bedarfe = Needs.query.all()
+    return render_template('select_bedarf.html', bedarfe=bedarfe)
+
+
+# edit or delete - come here from form in /select_record
+@app.route('/edit_or_delete_bedarf', methods=['POST'])
+@auth.login_required
+
+def edit_or_delete_bedarf():
+    id = request.form['id']
+    choice = request.form['choice']
+    bedarf = Needs.query.filter(Needs.id == id).first()
+    # two forms in this template
+    form3 = AddRecord_Needs()
+    form4 = DeleteForm_Needs()
+    return render_template('edit_or_delete_bedarf.html', bedarf=bedarf, form3=form3, form4=form4, choice=choice)
+
+
+
+
+# result of delete - this function deletes the record
+@app.route('/delete_bedarf', methods=['POST'])
+@auth.login_required
+
+def delete_bedarf():
+    id = request.form['id_field']
+    purpose = request.form['purpose']
+    bedarf = Needs.query.filter(Needs.id == id).first()
+
+
+    if purpose == 'delete':
+        db.session.delete(bedarf)
+        db.session.commit()
+        message = f"Der Bedarf wurde gelöscht."
+        return render_template('result.html', message=message)
+    else:
+        # this calls an error handler
+        abort(405)
+
+# result of edit - this function updates the record
+@app.route('/edit_bedarf', methods=['POST'])
+@auth.login_required
+
+def edit_bedarf():
+    id = request.form['id_field']
+    # call up the record from the database
+    bedarf = Needs.query.filter(Needs.id == id).first()
+
+    # update all values
+    bedarf.solawiname = request.form['solawiname']
+    bedarf.saison = request.form['saison']
+    bedarf.anteile = request.form['anteile']
+    bedarf.budget = request.form['budget']
+    bedarf.ackertage = request.form['ackertage']
+    # get today's date from function, above all the routes
+    bedarf.updated = stringdate()
+
+    form3 = AddRecord_Needs()
+    if form3.validate_on_submit():
+        # update database record
+        db.session.commit()
+        # create a message to send to the template
+        message = f"Der Bedarf wurde geändert."
+        return render_template('result.html', message=message)
+    else:
+        # show validaton errors
+        bedarf.id = id
+        # see https://pythonprogramming.net/flash-flask-tutorial/
+        for field, errors in form3.errors.items():
+            for error in errors:
+                flash("Error in {}: {}".format(
+                    getattr(form3, field).label.text,
+                    error
+                ), 'error')
+        return render_template('edit_or_delete_bedarf.html', form3=form3, bedarf=bedarf, choice='edit')
+
+
+
+
+################
+
+
+
+# ####### starte
+#@app.route('/starten')
+#@auth.login_required
+#def delete_offers():
+ #   return render_template('delete_offers.html')
+
+
+@app.route('/dbcreate')
+@auth.login_required
+def dbcreate():
+    db.create_all()
+    message = f"Datenbank wurde eingerichtet."
+    return render_template('result.html', message=message)
+
+
+# ####### initialise the app --> Database 
+@app.route('/go')
+@auth.login_required
+def go():
+    anteilname = '0'
+    verteilort = '0'
+    anteilgr = '0'
+    gebotgruen = '0'
+    gebotgelb = '0'
+    gebotrot = '0'
+    gebotackertage = '0'
+    brot = '0'
+    brot_anzahl= '0'
+    brot_kommentar = '0'
+    name_a = '0'
+    mail_a = '0'
+    tel_a = '0'
+    name_b = '0'
+    mail_b = '0'
+    name_c = '0'
+    mail_c = '0'
+
+        # get today's date from function, above all the routes
+    updated = stringdate()
+        # the data to be inserted into record model
+    start_offer = Offer(anteilname, verteilort, anteilgr, gebotgruen, gebotgelb, gebotrot, gebotackertage, brot, brot_anzahl, brot_kommentar, name_a, mail_a, tel_a, name_b, mail_b, name_c, mail_c, updated)
+    #start_offer = Offer(runde, anteilname, anteilgr, gebot, name, mail, tel, adresse, geburtsdatum, updated)
+    # Flask-SQLAlchemy magic adds record to database
+    db.session.add(start_offer)
+
+    solawiname = 'BLABLABLA'
+    saison = '00/00'
+    anteile = '1'
+    budget = '1'
+    ackertage = '1'
+    
+        # the data to be inserted into Record model
+    start_need = Needs(solawiname, saison, anteile, budget, ackertage, updated)
+        # Flask-SQLAlchemy magic adds record to database
+    db.session.add(start_need)
+    db.session.commit()
+        # create a message to send to the template
+
+    message = f"Mopser-Biet-App erfolgreich initialisiert."
+    return render_template('result.html', message=message)
+  
+
+
+
+
+
+
+# +++++++++++++++++++++++
+# error routes
+# https://flask.palletsprojects.com/en/1.1.x/patterns/apierrors/#registering-an-error-handler
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('error.html', pagetitle="404 Error - Page Not Found", pageheading="Page not found (Error 404)", error=e), 404
+
+@app.errorhandler(405)
+def form_not_posted(e):
+    return render_template('error.html', pagetitle="405 Error - Form Not Submitted", pageheading="The form was not submitted (Error 405)", error=e), 405
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('error.html', pagetitle="500 Error - Internal Server Error", pageheading="Internal server error (500)", error=e), 500
+
+# +++++++++++++++++++++
+
+if __name__ == "__main__":
+  app.run()
+
+------------------------------------------------
+### models.py
+
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
+class Offer(db.Model):
+    __tablename__ = 'Offers'
+    id = db.Column(db.Integer, primary_key=True)
+    anteilname = db.Column(db.String)
+    verteilort = db.Column(db.String)
+    anteilgr = db.Column(db.Float)
+    gebotgruen = db.Column(db.Integer)
+    gebotgelb = db.Column(db.Integer)
+    gebotrot = db.Column(db.Integer)
+    gebotackertage = db.Column(db.Integer)
+    brot = db.Column(db.String)
+    brot_anzahl = db.Column(db.Float)
+    brot_kommentar = db.Column(db.String)
+    name_a = db.Column(db.String)
+    mail_a = db.Column(db.String)
+    tel_a = db.Column(db.String)
+    name_b = db.Column(db.String)
+    mail_b = db.Column(db.String)
+    name_c = db.Column(db.String)
+    mail_c = db.Column(db.String)
+    updated = db.Column(db.String)
+
+    def __init__(self, anteilname, verteilort, anteilgr, gebotgruen, gebotgelb, gebotrot, gebotackertage, brot, brot_anzahl, brot_kommentar, name_a,mail_a,tel_a, name_b, mail_b, name_c, mail_c,  updated):
+        self.anteilname = anteilname
+        self.verteilort = verteilort
+        self.anteilgr = anteilgr
+        self.gebotgruen = gebotgruen
+        self.gebotgelb = gebotgelb
+        self.gebotrot = gebotrot
+        self.gebotackertage = gebotackertage
+        self.brot = brot
+        self.brot_anzahl = brot_anzahl
+        self.brot_kommentar = brot_kommentar
+        self.name_a = name_a
+        self.mail_a = mail_a
+        self.tel_a = tel_a
+        self.name_b = name_b
+        self.mail_b = mail_b
+        self.name_c = name_c
+        self.mail_c = mail_c
+        self.updated = updated
+
+# table for needs
+
+class Needs(db.Model):
+    __tablename__ = 'Needs'
+    id = db.Column(db.Integer, primary_key=True)
+    solawiname = db.Column(db.String)
+    saison = db.Column(db.String)
+    anteile = db.Column(db.Integer)
+    budget = db.Column(db.Integer)
+    ackertage = db.Column(db.Integer)
+    updated = db.Column(db.String)
+
+    def __init__(self, solawiname, saison, anteile, budget, ackertage, updated):
+        self.solawiname = solawiname
+        self.saison = saison
+        self.anteile = anteile
+        self.budget = budget
+        self.ackertage = ackertage
+        self.updated = updated
+
+-----------------------------
+### forms.py
+
+from flask_wtf import FlaskForm
+from wtforms import (HiddenField, StringField, SelectField, IntegerField, 
+                    SubmitField)
+from wtforms.validators import (InputRequired, Length, NumberRange)
+
+# ++++++++++++++++++++++++++++++++++++++++++ OFFERS ++++++++++++++++++++++++++++++++++
+# forms with Flask-WTF
+
+# form for add_record and edit_or_delete
+# each field includes validation requirements and messages
+class AddRecord_Offer(FlaskForm):
+    # id used only by update/edit
+    id_field = HiddenField()
+    anteilname = StringField('Name des Anteils (denk dir einen aus!)', [ InputRequired(),
+        #Regexp(r'^[A-Za-z\s\-\']+$', message="Invalid name"),
+        #Length(min=3, max=30, message="Invalid name name length") ])
+        Length(min=3, max=25, message="Ungültige Namenslänge")])
+
+    verteilort = SelectField('Wo holst du dein Gemüse?', [ InputRequired()],
+        choices=[ ('', ''), ('Westend', 'Westend'),
+        ('Mammendorf', 'Mammendorf'), ('anderer', 'anderer'), ])
+
+    anteilgr = SelectField('Wähle die Größe deines Anteils:', [ InputRequired()],
+        choices=[ ('1', '1'), ('0.5', '0.5'),
+        ('1.5', '1.5'), ])
+
+    gebotgruen = IntegerField('grün: Das zahle ich locker!', [ InputRequired(),
+        # NumberRange(min=1, max=999, message="Invalid range") ])
+        NumberRange(min=1, max=999, message="Ungültiger Bereich")])
+
+    gebotgelb = IntegerField('gelb: Das wäre auch in Ordnung!', [ InputRequired(),
+        NumberRange(min=1, max=999, message="Ungültiger Bereich")])
+
+    gebotrot = IntegerField('rot: Das ist meine Schmerzgrenze!', [ InputRequired(),
+        NumberRange(min=1, max=999, message="Ungültiger Bereich")])
+
+    gebotackertage = IntegerField('Wie viele Tage willst du (dein Anteil) kommende Saison ackern?', [ InputRequired(),
+        NumberRange(min=1, max=999, message="Ungültiger Bereich")])
+
+    #brot = BooleanField('Brot Anzahl', [InputRequired()])  # This is your checkbox field
+    brot = SelectField('Du Brot?', [ InputRequired()],
+        choices=[ ('nein', 'nein'),('wöchentlich', 'wöchentlich'),('2-Wöchig', '2-Wöchig'),
+        ('1 mal im Monat', '1 mal im Monat'), ('ab und zu', 'ab und zu')])
+
+    brot_anzahl = SelectField('Wie viel Brot?', [ InputRequired()],
+        choices=[ ('0.25', '1/4'),('0.5', '1/2'),('1', '1'),
+        ('1.5', '1 1/2')])
+
+    brot_kommentar = StringField('Kommentar zum Brot')
+
+    name_a = StringField('Name einer verantwortlichen Person für deinen Anteil', [ InputRequired(),
+        Length(min=3, max=30, message="Ungültige Namenslänge") ])
+    
+    mail_a = StringField('E-Mail einer verantwortlichen Person für deinen Anteil', [ InputRequired(),
+        Length(min=3, max=30, message="Ungültige Namenslänge") ])
+    
+    tel_a = StringField('Telefonnummer einer verantwortlichen Person für deinen Anteil', [ InputRequired(),
+        Length(min=3, max=30, message="Ungültige Namenslänge") ])
+
+
+    name_b = StringField('(optional) Name einer weiteren Person für deinen Anteil')
+    
+    mail_b = StringField('(optional) E-Mail einer weiteren Person für deinen Anteil')
+    
+    name_c = StringField('(optional) Name einer weiteren Person für deinen Anteil')
+    
+    mail_c = StringField('(optional) E-Mail einer weiteren Person für deinen Anteil')
+
+
+   # price = FloatField('Retail price per pair', [ InputRequired(),
+    #    NumberRange(min=1.00, max=99.99, message="Invalid range")
+     #   ])
+    # updated - date - handled in the route
+    updated = HiddenField()
+    submit = SubmitField('Abschicken')
+
+
+################ NEEDS #############
+
+# form for add bedarf
+# each field includes validation requirements and messages
+class AddRecord_Needs(FlaskForm):
+    # id used only by update/edit
+    id_field = HiddenField()
+    
+    solawiname = StringField('Name deiner Solawi à la Solawi Donihof', [ InputRequired(),
+        Length(min=3, max=80, message="Ungültige Namenslänge")])
+    
+    saison = StringField('Saison à la 22/23', [ InputRequired(),
+        Length(min=3, max=30, message="Ungültige Namenslänge")])
+
+    anteile = IntegerField('Anzahl der Anteile', [ InputRequired(),
+        NumberRange(min=1, max=999, message="Ungültiger Bereich")])
+        
+    budget = IntegerField('Jahresbudget', [ InputRequired(),
+        NumberRange(min=1, max=9999999, message="Ungültiger Bereich")
+        ])
+    ackertage = IntegerField('Benötigte Ackertage', [ InputRequired(),
+        NumberRange(min=1, max=999, message="Ungültiger Bereich")
+        ])
+    # updated - date - handled in the route
+    updated = HiddenField()
+    submit = SubmitField('Bedarf hinzufügen')
+
+
+# small form
+class DeleteForm_Offer(FlaskForm):
+    id_field = HiddenField()
+    purpose = HiddenField()
+    submit = SubmitField('Gebot löschen')
+
+class DeleteForm_Needs(FlaskForm):
+    id_field = HiddenField()
+    purpose = HiddenField()
+    submit = SubmitField('Bedarf löschen')

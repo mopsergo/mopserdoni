@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+<h4 class="pt-5 pb-2">Zur Orientierung gibt es folgende Infos:</h4>
+<p>Damit sich das Projekt trägt, müssen wir pro Monat und (ganzem) Anteil im Durchschnitt folgende Beiträge erreichen:</p>
+    <h4>Gemüse: {{ project_need.avg_offer_veg }} €</h4>
+    <h4>Brot: {{ project_need.avg_offer_bread }} €</h4>
+    <h2>Zusammen: <b>{{ project_need.avg_offer_bread + project_need.avg_offer_veg}} €</b></h2>
+    <h4>Ackerei: {{ project_need.avg_working_days }} Tage im Jahr</h4>
+<p>Im Sinne unserer solidarischen Bietrunde laden wir euch herzlich ein, nach eigenem Ermessen einen für euch passenden monatlichen Beitrag zu bieten.</p>
+
+
+<h3>Let's go!</h3>
+<br>
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+        {{ form.anteilname.label }} {{ form.anteilname(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.verteilort.label }} {{ form.verteilort(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.verteilort_wunsch.label }} {{ form.verteilort_wunsch(class="form-control") }}
+    </div>
+
+    <h3>Gemüseanteil</h3>
+    <div class="form-group">
+        {{ form.anteilgr.label }} {{ form.anteilgr(class="form-control") }}
+    </div>
+
+    <h3>Brotanteil</h3>
+    <p>Ein Brotanteil entspricht ca <b>0,75-1 kg Brot pro Woche</b>, also 3-4 kg im Monat!</p>
+    <div class="form-group">
+        {{ form.brot.label }} {{ form.brot(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.brot_kommentar.label }} {{ form.brot_kommentar(class="form-control") }}
+    </div>
+
+    <h3>Was willst du bieten?</h3>
+    <p>Achtung: Gemüse und Brot wird auf einmal geboten, also {{ project_need.avg_offer_veg }} € fürs Gemüse und {{ project_need.avg_offer_bread }} € fürs Brot = <b>{{ project_need.avg_offer_bread + project_need.avg_offer_veg}} € </b> in Summe oder so ähnlich.</p>
+    <div class="form-group">
+        {{ form.gebotgruen.label }} {{ form.gebotgruen(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.gebotgelb.label }} {{ form.gebotgelb(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.gebotrot.label }} {{ form.gebotrot(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.gebotackertage.label }} {{ form.gebotackertage(class="form-control") }}
+    </div>
+
+   
+
+    <h3>Deine Daten</h3>
+    <div class="form-group">
+        {{ form.name_a.label }} {{ form.name_a(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.mail_a.label }} {{ form.mail_a(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.tel_a.label }} {{ form.tel_a(class="form-control") }}
+    </div>
+
+
+    <h3>Die Daten weiterer Anteilnehmer:innen, falls du welche hast.</h3>
+    <div class="form-group">
+        {{ form.name_b.label }} {{ form.name_b(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.mail_b.label }} {{ form.mail_b(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.name_c.label }} {{ form.name_c(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.mail_c.label }} {{ form.mail_c(class="form-control") }}
+    </div>
+
+    <button type="submit" class="btn btn-warning">Abschicken</button>
+</form>
+
+
+
+{% endblock %}

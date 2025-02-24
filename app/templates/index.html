@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h1 class="pt-5 pb-2">MOPSER BIET-APP 3000</h1>
+
+<p>
+Willkommen zur digitalen Bietrunde der {{project_need.name}} für die Saison {{project_need.saison}}.</p>
+
+
+<!-- links -->
+
+<p>Hier geht's zum Bieten:</p>
+<a href="{{ url_for('user.submit_offer') }}" class="btn btn-warning">Bieten!</a>
+
+
+<h4 class="pt-5 pb-2">Zur Orientierung gibt es folgende Infos:</h4>
+<p>Damit sich das Projekt trägt, müssen wir pro Monat und (ganzem) Anteil im Durchschnitt folgende Beiträge erreichen:</p>
+    <h4>Gemüse: {{ project_need.avg_offer_veg }} €</h4>
+    <h4>Brot: {{ project_need.avg_offer_bread }} €</h4>
+    <h2>Zusammen: <b>{{ project_need.avg_offer_bread + project_need.avg_offer_veg}} €</b></h2>
+    <h4>Ackerei: {{ project_need.avg_working_days }} Tage im Jahr</h4>
+<p>Im Sinne unserer solidarischen Bietrunde laden wir euch herzlich ein, nach eigenem Ermessen einen für euch passenden monatlichen Beitrag zu bieten.</p>
+
+    
+<!-- Link to Admin Dashboard -->
+<a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-warning">Mopser Analytics</a>
+
+{% endblock %}

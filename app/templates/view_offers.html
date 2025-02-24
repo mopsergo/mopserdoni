@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Gebote</h2>
+
+<div class="table-responsive">
+<table class="table table-striped sortable">
+
+    <thead>
+        <tr>
+            <th>Name-Anteil</th>
+            <th>Abholort</th>
+            <th>Wunschort</th>
+            <th>Gemüseanteil</th>
+            <th>Brotanteil</th>
+            <th>Name A</th>
+            <th>Mail A</th>
+            <th>Datum</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        {% for offer in offers %}
+        <tr>
+            <td><a href="{{ url_for('admin.edit_offer', offer_id=offer.id) }}">{{ offer.anteilname }}</a></td>
+            <td>{{ offer.verteilort }}</td>
+            <td>{{ offer.verteilort_wunsch}}</td>
+            <td>{{ offer.anteilgr }}</td>
+            <td>{{ offer.brot }}</td>
+            <td>{{ offer.name_a }}</td>
+            <td>{{ offer.mail_a }}</td>
+            <td>{{ offer.updated }}</td>
+            <td>
+                <!--
+                <a href="{{ url_for('admin.edit_offer', offer_id=offer.id) }}" class="btn btn-sm btn-warning">Bearbeiten</a>
+            -->
+                <form method="POST" action="{{ url_for('admin.delete_offer', offer_id=offer.id) }}" class="d-inline" onsubmit="return confirmReset();">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <button type="submit" class="btn btn-sm btn-warning">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    <!--<button type="submit" class="btn btn-sm btn-warning">Löschen</button>-->
+                </form>
+            </td>
+          
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Zurück</a>
+
+<script>
+    function confirmReset() {
+        return confirm("Sicher?");
+    }
+    </script>
+
+{% endblock %}

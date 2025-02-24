@@ -1,0 +1,68 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+
+{% endblock %}
+
+
+{% block title %}
+Bedarf festlegen
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+	<div class="row pb-5">
+		<div class="col align-self-center">
+		<!--<div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">-->
+
+		<h2 class="pt-5 pb-2">Bedarf</h2>
+
+		{% if message %}
+
+			<!-- the form was submitted and message exists -->
+			<p class="lead"><strong>{{ message }}</strong></p>
+
+			<!-- links -->
+			<p>fertig</p>
+			<p><a href="{{ url_for('index') }}">Zurück zur Startseite</a></p>
+			<p class="ml-4"><a href="{{ url_for('analyse') }}">Zurück zu Mopser Analytics</a></p>
+
+			
+		{% else %}
+
+			<!-- the form is displayed when template opens via GET not POST -->
+
+			<p class="lead alert alert-primary">Lege hier den Bedarf für die Saison fest.</p>
+
+			<!--<p class="ml-4"><a href="{{ url_for('index') }}">Return to the index.</a></p>-->
+			<p class="ml-4"><a href="{{ url_for('analyse') }}">Zurück zu Mopser Analytics</a></p>
+
+			{% with errors = get_flashed_messages() %}
+				{% if errors %}
+					{% for err in errors %}
+						<div class="alert alert-danger alert-dismissible" role="alert">
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+						{{ err }}
+						</div>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+			<!-- end of flash -->
+
+			<!-- the form, thanks to WTForms -->
+		    {{ wtf.quick_form(form3) }}
+
+		{% endif %}
+
+		</div>
+	</div>
+</div>
+
+{% endblock %}

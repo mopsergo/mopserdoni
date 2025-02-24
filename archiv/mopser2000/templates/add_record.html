@@ -1,0 +1,92 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+{% endblock %}
+
+
+{% block title %}
+Bieten
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+
+	<div class="row pb-5">
+		<!--<div class="row justify-content-md-center">-->
+
+		<!--<div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">-->
+		<!--<div class="col align-self-center mx-lg-auto mx-md-auto">-->
+		<div class="col align-self-center">
+
+		<h2 class="pt-5 pb-2">Bieten</h2>
+
+		{% if message %}
+
+			<!-- the form was submitted and message exists -->
+			<!--<p class="lead"><strong>{{ message }}</strong></p>-->
+			<p class="lead alert alert-primary">{{ message }}</p>
+
+
+			<!-- links -->
+			<p><a href="{{ url_for('add_record') }}">Für einen weiteren Anteil bieten.</a></p>
+
+			<p><a href="{{ url_for('index') }}">Zurück zum Start</a></p>
+
+		{% else %}
+
+			<!-- the form is displayed when template opens via GET not POST -->
+
+			<p class="lead alert alert-primary">Was kannst du für deinen Ernteanteil monatlich bezahlen?</p>
+			<p class="lead">Beachte das Ampelverfahren:</p>
+
+			<p>grün = zahl ich locker</p>
+			<p>gelb = kann ich auch zahlen</p>
+			<p>rot = zahle ich zur Not</p>
+
+			<!--
+			<ul class="lead">
+				<li>grün = zahl ich locker</li>
+				<li>gelb = kann ich auch zahlen</li>
+				<li>rot = zahle ich zur Not.</li>
+			  </ul>
+
+			-->
+
+			<p class="lead">Bitte pro Anteil nur einmal bieten!</p>
+
+			<p class="ml-4"><a href="{{ url_for('index') }}">Zurück zum Start</a></p>
+
+			<!-- show flash - based on WTForms validators
+				 see https://pythonprogramming.net/flash-flask-tutorial/
+				 get_flashed_messages() exists here because of flash()
+				 in the route function
+				 -->
+			{% with errors = get_flashed_messages() %}
+				{% if errors %}
+					{% for err in errors %}
+						<div class="alert alert-danger alert-dismissible" role="alert">
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+						{{ err }}
+						</div>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+			<!-- end of flash -->
+			
+
+			<!-- the form, thanks to WTForms -->
+		    {{ wtf.quick_form(form1) }}
+
+		{% endif %}
+
+		</div>
+	</div>
+</div>
+
+{% endblock %}
