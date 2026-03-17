@@ -22,8 +22,6 @@ class Offer(db.Model):
     mail_c = db.Column(db.String(100), nullable=True)
     updated = db.Column(db.String)
 
-    
-
 
 class ProjectNeed(db.Model):
     id = db.Column(db.Integer, primary_key=True)

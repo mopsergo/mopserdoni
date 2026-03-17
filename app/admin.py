@@ -62,11 +62,33 @@ def admin_dashboard():
     diff_working_days_year = total_working_days_year - total_dynamic_working_days_year
 
     # Calculate normalized averages
-    avg_offer_green_normalized = sum(offer.gebotgruen / offer.anteilgr for offer in offers) / total_offers if total_offers else 0
-    avg_offer_yellow_normalized = sum(offer.gebotgelb / offer.anteilgr for offer in offers) / total_offers if total_offers else 0
-    avg_offer_red_normalized = sum(offer.gebotrot / offer.anteilgr for offer in offers) / total_offers if total_offers else 0
-    avg_working_days_normalized = sum(offer.gebotackertage / offer.anteilgr for offer in offers) / total_offers if total_offers else 0
-    #avg_offer_green_normalized = sum(offer.gebotgruen / offer.anteilgr for offer in offers) / total_veg_sum if total_veg_sum else 0
+    valid_offers = [o for o in offers if o.anteilgr]
+
+    avg_offer_green_normalized = (
+        sum(o.gebotgruen / o.anteilgr for o in valid_offers) / len(valid_offers)
+        if valid_offers else 0
+    )
+
+    avg_offer_yellow_normalized = (
+        sum(o.gebotgelb / o.anteilgr for o in valid_offers) / len(valid_offers)
+        if valid_offers else 0
+    )
+
+    avg_offer_red_normalized = (
+        sum(o.gebotrot / o.anteilgr for o in valid_offers) / len(valid_offers)
+        if valid_offers else 0
+    )
+
+    avg_working_days_normalized = (
+        sum(o.gebotackertage / o.anteilgr for o in valid_offers) / len(valid_offers)
+        if valid_offers else 0
+    )
+
+    # avg_offer_green_normalized = sum(offer.gebotgruen / offer.anteilgr if offer.anteilgr else 0 for offer in offers) / total_offers if total_offers else 0
+    # avg_offer_yellow_normalized = sum(offer.gebotgelb / offer.anteilgr if offer.anteilgr else 0 for offer in offers) / total_offers if total_offers else 0
+    # avg_offer_red_normalized = sum(offer.gebotrot / offer.anteilgr if offer.anteilgr else 0 for offer in offers) / total_offers if total_offers else 0
+    # avg_working_days_normalized = sum(offer.gebotackertage / offer.anteilgr if offer.anteilgr else 0 for offer in offers) / total_offers if total_offers else 0
+    # #avg_offer_green_normalized = sum(offer.gebotgruen / offer.anteilgr for offer in offers) / total_veg_sum if total_veg_sum else 0
     #avg_offer_yellow_normalized = sum(offer.gebotgelb / offer.anteilgr for offer in offers) / total_veg_sum if total_veg_sum else 0
     #avg_offer_red_normalized = sum(offer.gebotrot / offer.anteilgr for offer in offers) / total_veg_sum if total_veg_sum else 0
     #avg_working_days_normalized = sum(offer.gebotackertage / offer.anteilgr for offer in offers) / total_veg_sum if total_veg_sum else 0
@@ -189,6 +211,7 @@ def download_offers():
         'Gebot Rot': offer.gebotrot,
         'Gebot Ackertage': offer.gebotackertage,
         'Brot': offer.brot,
+        'Brot Kommentar': offer.brot_kommentar,
         #'Brot Anzahl': offer.brot_anzahl,
         'Name A': offer.name_a,
         'Mail A': offer.mail_a,
